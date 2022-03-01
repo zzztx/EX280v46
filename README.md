@@ -52,6 +52,34 @@ To become a Red Hat Certified Specialist in OpenShift Administration, you should
 	- Manually control the number of cluster workers
 	- Automatically scale the number of cluster workers
 
+
+Mem:
+- Identity Provider
+- Access to project using RBAC
+- ResourceQuota
+- LimitRange for project
+- Secret as Environment Viable
+- Manual scale and autoscaling with cpu/mem limit
+- Route and Secure Route
+- SCC
+- User and Group
+- Taint and Toleration
+- Node selector
+
+
+*  Describe the Red Hat OpenShift Container Platform cluster installation and update processes
+*  Troubleshoot application deployments
+*  Configure authentication using local users
+*  Control access to projects using role-based access control (RBAC)
+*  Expose applications to clients external to the cluster using TLS encryption
+*  Configure network isolation between services and applications using network policies
+*  Configure network isolation between services and applications using network policies
+*  Configure application scheduling using labels and selectors
+*  Limit compute resource usage of applications with resource limits and quotas
+*  Manage a cluster and deployed applications with the Web Console
+*  Install Kubernetes Operators with the Web Console
+
+
 ## Manage OpenShift Container Platform
 
 Executing troubleshooting commands:
