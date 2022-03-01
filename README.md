@@ -290,17 +290,44 @@ spec:
 
 ```
 
-
-
-A violation of ResourceQuota constraints prevents a pod from being scheduled to any node. The pod might be created but remain in the pending state
+### ResourceQuota ###
+A violation of ResourceQuota constraints prevents a pod from being scheduled to any node. The pod might be created but remain in the pending state. A resource quota, defined by a ResourceQuota object, provides constraints that limit aggregate resource consumption per project. It can limit the quantity of objects that can be created in a project by type, as well as the total amount of compute resources and storage that might be consumed by resources in that project.
+https://docs.openshift.com/container-platform/4.6/applications/quotas/quotas-setting-per-project.html
 
 ```
+> ResourceQuota in multiple projects
+
 oc create clusterquota user-qa \
 > --project-annotation-selector openshift.io/requester=qa \
 > --hard pods=12,secrets=20
 oc create clusterquota env-qa \
 > --project-label-selector environment=qa \
 > --hard pods=10,services=5
+
+> ResourceQuota in one peoject
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: core-object-counts
+spec:
+  hard:
+    configmaps: "10" 
+    persistentvolumeclaims: "4" 
+    replicationcontrollers: "20" 
+    secrets: "10" 
+    services: "10" 
+    services.loadbalancers: "2" 
+
+    pods: "4" 
+    requests.cpu: "1" 
+    requests.memory: 1Gi 
+    requests.ephemeral-storage: 2Gi 
+    limits.cpu: "2" 
+    limits.memory: 2Gi 
+    limits.ephemeral-storage: 4Gi
+
+  scopes:
+  - BestEffort  // NotTerminating or Terminating
 ```
 
 Scaling an Application  
