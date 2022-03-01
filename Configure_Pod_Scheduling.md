@@ -74,7 +74,7 @@ spec:
 A violation of ResourceQuota constraints prevents a pod from being scheduled to any node. The pod might be created but remain in the pending state. A resource quota, defined by a ResourceQuota object, provides constraints that limit aggregate resource consumption per project. It can limit the quantity of objects that can be created in a project by type, as well as the total amount of compute resources and storage that might be consumed by resources in that project.
 https://docs.openshift.com/container-platform/4.6/applications/quotas/quotas-setting-per-project.html
 
-```
+```diff
 > ResourceQuota in multiple projects
 
 oc create clusterquota user-qa \
@@ -116,9 +116,32 @@ spec:
   - BestEffort  // NotTerminating or Terminating
 ```
 
-Scaling an Application  
-```
+## Scaling an Application ##
+Using a horizontal pod autoscaler (HPA) to specify how OpenShift Container Platform should automatically increase or decrease the scale of a replication controller or deployment configuration, based on metrics collected from the pods that belong to that replication controller or deployment configuration.
+https://docs.openshift.com/container-platform/4.6/nodes/pods/nodes-pods-autoscaling.html
+```diff
+> Scale application manually
 oc scale --replicas 3 deployment/myapp
+
+> Scale application automatically
 oc autoscale dc/hello --min 1 --max 10 --cpu-percent 80
 oc get hpa
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: image-registry
+  namespace: default
+spec:
+  maxReplicas: 7
+  minReplicas: 3
+  scaleTargetRef:
+    apiVersion: apps.openshift.io/v1
+    kind: DeploymentConfig
+    name: image-registry
+  targetCPUUtilizationPercentage: 75
+status:
+  currentReplicas: 5
+  desiredReplicas: 0
+  
+
 ```
