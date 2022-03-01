@@ -220,10 +220,10 @@ oc create route edge \
 
 ## Configure Pod Scheduling
 
-I think this topic has the most weight over all the topics in this exam.
+This topic has the most weight over all the topics in this exam.
 
 Controlling pod scheduling behavior (factors that can affect on which nodes a pod can or cannot be run)  
-```
+```diff
 oc label node node1.us-west-1.compute.internal env[-|=dev] [--overwrite]
 oc get node node2.us-west-1.compute.internal --show-labels
 oc get node -L failure-domain.beta.kubernetes.io/region
@@ -244,7 +244,55 @@ oc get resourcequota -n <ns>
 oc describe limitrange dev-limits
 ```
 
-A violation of LimitRange constraints prevents pod creation, and resulting error messages are displayed. A violation of ResourceQuota constraints prevents a pod from being scheduled to any node. The pod might be created but remain in the pending state
+### LimitRange ###
+A violation of LimitRange constraints prevents pod creation, and resulting error messages are displayed. A limit range, defined by a LimitRange object, restricts resource consumption in a project. In the project you can set specific resource limits for a pod, container, image, image stream, or persistent volume claim (PVC).
+https://docs.openshift.com/container-platform/4.6/nodes/clusters/nodes-cluster-limit-ranges.html
+```diff
+> Container limits
+apiVersion: "v1"
+kind: "LimitRange"
+metadata:
+  name: "resource-limits"
+spec:
+  limits:
+    - type: "Container"
+      max:
+        cpu: "2"
+        memory: "1Gi"
+      min:
+        cpu: "100m"
+        memory: "4Mi"
+      default:
+        cpu: "300m"
+        memory: "200Mi"
+      defaultRequest:
+        cpu: "200m"
+        memory: "100Mi"
+      maxLimitRequestRatio:
+        cpu: "10"
+
+> Pod limits
+apiVersion: "v1"
+kind: "LimitRange"
+metadata:
+  name: "resource-limits" 
+spec:
+  limits:
+    - type: "Pod"
+      max:
+        cpu: "2" 
+        memory: "1Gi" 
+      min:
+        cpu: "200m" 
+        memory: "6Mi" 
+      maxLimitRequestRatio:
+        cpu: "10" 
+
+```
+
+
+
+A violation of ResourceQuota constraints prevents a pod from being scheduled to any node. The pod might be created but remain in the pending state
 
 ```
 oc create clusterquota user-qa \
