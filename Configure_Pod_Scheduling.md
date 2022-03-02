@@ -50,14 +50,6 @@ spec:
         memory: "100Mi"
       maxLimitRequestRatio:
         cpu: "10"
-
-> Pod limits
-apiVersion: "v1"
-kind: "LimitRange"
-metadata:
-  name: "resource-limits" 
-spec:
-  limits:
     - type: "Pod"
       max:
         cpu: "2" 
@@ -97,14 +89,12 @@ metadata:
   name: core-object-counts
 spec:
   hard:
-    configmaps: "10" 
-    persistentvolumeclaims: "4" 
-    replicationcontrollers: "20" 
-    secrets: "10" 
-    services: "10" 
-    services.loadbalancers: "2" 
+    memory: "1Gi"
+    cpu: "2m"
+    replicationcontrollers: 3
+    pods: 3
+    services: 6
 
-    pods: "4" 
     requests.cpu: "1" 
     requests.memory: 1Gi 
     requests.ephemeral-storage: 2Gi 
@@ -114,6 +104,8 @@ spec:
 
   scopes:
   - BestEffort  // NotTerminating or Terminating
+
+oc get quota -o wide
 ```
 
 ## Scaling an Application ##
