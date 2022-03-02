@@ -65,6 +65,7 @@ Mem:
 - User and Group
 - Taint and Toleration
 - Node selector
+- CRIO error: deployment not ready
 
 
 *  Describe the Red Hat OpenShift Container Platform cluster installation and update processes
