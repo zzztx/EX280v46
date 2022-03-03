@@ -21,26 +21,66 @@ Default roles that can be added or removed from a project level:
 
 System users: system:admin, system:openshift-registry, and system:node:node1.example.com.
 
-Managing Sensitive Information with Secrets  
+Managing Sensitive Information with Secrets. https://docs.openshift.com/container-platform/4.9/nodes/pods/nodes-pods-secrets.html
 ```diff
-# oc create secret generic secret_name \
-> --from-literal key1=secret1 \
-> --from-literal key2=secret2
+# oc create secret generic secret_name --from-literal key1=secret1 --from-literal key2=secret2
 
-# oc secrets add --for mount serviceaccount/serviceaccount-name \
-> secret/secret_name
+# oc secrets link --for mount serviceaccount/serviceaccount-name secret/secret_name
 
 # oc set env dc/demo --from=secret/demo-secret
 
-# oc set volume dc/demo \
-> --add \
-> --type=secret \
-> --secret-name=demo-secret \
-> --mount-path=/app-secrets
+Add secret as a volume 
+# oc set volume pod/example-pod --add --type=secret --secret-name=test-secret --mount-path=/etc/secret-volume
+apiVersion: v1
+kind: Pod
+metadata:
+  name: example-pod
+spec:
+  containers:
+    - name: secret-test-container
+      image: busybox
+      command: [ "/bin/sh", "-c", "cat /etc/secret-volume/*" ]
+      volumeMounts:
+          # name must match the volume name below
+          - name: secret-volume
+            mountPath: /etc/secret-volume
+            readOnly: true
+  volumes:
+    - name: secret-volume
+      secret:
+        secretName: test-secret
+  restartPolicy: Never
+
+Add secret as environment varible
+apiVersion: v1
+kind: Pod
+metadata:
+  name: secret-example-pod
+spec:
+  containers:
+    - name: secret-test-container
+      image: busybox
+      command: [ "/bin/sh", "-c", "export" ]
+      env:
+        - name: TEST_SECRET_USERNAME_ENV_VAR
+          valueFrom:
+            secretKeyRef:
+              name: test-secret
+              key: username
+  restartPolicy: Never
+```
+
+Creating Service Account:
+```diff
+# oc create sa sample1
+serviceaccount/sample1 created
+# oc adm policy add-role-to-user view -z sample1
+clusterrole.rbac.authorization.k8s.io/view added: "sample1"
+
 ```
 
 Controlling Application Permissions with Security Context Constraints (SCCs) (anyuid, privileged etc)  
 ```
-oc adm policy add-scc-to-user anyuid -z default
+# oc adm policy add-scc-to-user anyuid -z default
 ```
 
