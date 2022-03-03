@@ -1,4 +1,15 @@
 ## Manage OpenShift Container Platform ##
+- Manage OpenShift Container Platform
+	- Use the command-line interface to manage and configure an OpenShift cluster
+	- Use the web console to manage and configure an OpenShift cluster
+	- Create and delete projects
+	- Import, export, and configure Kubernetes resources
+	- Examine resources and cluster status
+	- View logs
+	- Monitor cluster events and alerts
+	- Troubleshoot common cluster events and alerts
+	- Use product documentation
+
 
 Executing troubleshooting commands:
 
