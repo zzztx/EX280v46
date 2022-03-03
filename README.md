@@ -81,55 +81,6 @@ Mem:
 *  Install Kubernetes Operators with the Web Console
 
 
-## Manage OpenShift Container Platform
-
-Executing troubleshooting commands:
-
-- Getting node informations:
-```
-oc get node
-oc describe node <nodename>
-```
-
-- Getting busiest nodes
-```
-oc adm top nodes
-```
-
-- Getting `journalctl` logs from a node
-```
-oc adm node-logs -u kubelet my-node-name
-```
-
-- Running a remote shell for a node
-```
-oc debug node/<nodename>
-```
-
-- Work with cluster installers
-```
-oc get clusteroperators
-oc get clusterversion -o yaml
-```
-
-- Getting a pod logs
-```
-oc logs <pod> [-c <container>] [-f]
-```
-
-- Debugging a deployment or a pod
-```
-oc debug deployment/<deplname> [--as-root]
-oc rsh <podname>
-oc port-forward <pod> <localport>:<remoteport>
-```
-
-- Getting a file from a pod
-```
-oc cp file <pod>:/file
-oc cp <pod>:/file file
-```
-
 
 
 ## Configure Networking Components
