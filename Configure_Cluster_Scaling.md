@@ -16,8 +16,7 @@ oc scale --replicas=2 machineset MACHINE-SET -n openshift-machine-api
 ```
 
 Automatically Scaling an OpenShift Cluster. Applying autoscaling to an OCP cluster involves deploying a cluster autoscaler and then deploying machine autoscalers for each machine type in your cluster.
-```
-diff
+```diff
 # oc get clusterautoscaler
 apiVersion: "autoscaling.openshift.io/v1"
 kind: "ClusterAutoscaler"
