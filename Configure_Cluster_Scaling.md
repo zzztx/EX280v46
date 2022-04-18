@@ -12,7 +12,7 @@ The Machine API Operator provisions the following resources:
 
 Manually Scaling an OpenShift Cluster by adding or removing an instance of a machine in a machine set.
 ```
-oc scale --replicas=2 machineset MACHINE-SET -n openshift-machine-api
+# oc scale --replicas=2 machineset MACHINE-SET -n openshift-machine-api
 ```
 
 Automatically Scaling an OpenShift Cluster. Applying autoscaling to an OCP cluster involves deploying a cluster autoscaler and then deploying machine autoscalers for each machine type in your cluster.
