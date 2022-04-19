@@ -76,7 +76,7 @@ oc get ingress
 ```
 
 Certificate generation:
-```
+```diff
 openssl genrsa -out file.key
 openssl req -new -subj <subject> -out file.req -key file.key
 openssl x509 -req -in file.req -out file.crt -signkey file.key
