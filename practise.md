@@ -6,7 +6,10 @@
 - littlerock
 - tallahassee
 - admin
+```diff
++ htpasswd
 
+```
 2. Create HTPasswd Secret from file.
 3. Download the HTPasswd Custom Resource (using the link provided on the lab page).
 4. Add the name of your HTPasswd Secret to the file.
