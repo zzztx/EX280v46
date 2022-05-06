@@ -1,4 +1,4 @@
-** Set Up htpasswd as the Identity Provider and Add Users and Permissions
+## Set Up htpasswd as the Identity Provider and Add Users and Permissions
 
 1. Create htpasswd file with these users with the password doubletap:
 - columbus
@@ -18,13 +18,14 @@
 10. Give admin cluster admin permissions.
 11. Remove the kubeadmin user from the cluster.
 
-** Role-Based Access and Groups **
+## Role-Based Access and Groups
 Create a project called twinkies.
 Create a group called yum.
 Add columbus, wichita, and littlerock to the yum group.
 Grant admin access to the yum group for the project twinkies.
 Create a custom resource that allows tallahassee to get pod information from the twinkies project and call it gettwinkies.
-Quotas and Resource Limits
+
+## Quotas and Resource Limits
 Download the quota and resource limit templates (using the links provided on the lab page).
 Modify the quota.yaml file with the following values:
 Max number of pods = 3
@@ -41,7 +42,8 @@ Limit cpus to 4
 Limit memory to 4 GB
 Limit Ephemeral storage to 8 GB
 Create resource limit and apply it to the twinkies project.
-Application Creation and Management
+
+## Application Creation and Management
 Note: Use https://github.com/sclorg/cakephp-ex example app to create applications
 
 Create test-app1, test-app2, test-app3, test-app4, and test-app5 projects.
