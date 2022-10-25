@@ -104,4 +104,78 @@ metadata:
 
 ```
 
+### Secret ###
+Creating secret:
+```yaml
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: test-secret
+type: Opaque 
+data: 
+  username: dXNlcjEK
+  password: cGFzc3dvcmQK
+stringData: 
+  hostname: myapp.mydomain.com
+  secret.properties: |
+    property1=valueA
+    property2=valueB
+
+```
+
+Consuming secret in Pod:
+```yaml
+# Using as file
+apiVersion: v1
+kind: Pod
+metadata:
+  name: secret-example-pod
+spec:
+  containers:
+    - name: secret-test-container
+      image: busybox
+      command: [ "/bin/sh", "-c", "cat /etc/secret-volume/*" ]
+      volumeMounts: 
+          - name: secret-volume
+            mountPath: /etc/secret-volume 
+            readOnly: true 
+  volumes:
+    - name: secret-volume
+      secret:
+        secretName: test-secret 
+  restartPolicy: Never
+  
+# Using as environment variable  
+apiVersion: v1
+kind: Pod
+metadata:
+  name: secret-example-pod
+spec:
+  containers:
+    - name: secret-test-container
+      image: busybox
+      command: [ "/bin/sh", "-c", "export" ]
+      env:
+        - name: TEST_SECRET_USERNAME_ENV_VAR
+          valueFrom:
+            secretKeyRef: 
+              name: test-secret
+              key: username
+  restartPolicy: Never
+
+```
+
+Using secret in Service Account:
+```yaml
+apiVersion: v1
+kind: ServiceAccount
+ ...
+secrets:
+- name: test-secret
+```
+
+
+
+
 
