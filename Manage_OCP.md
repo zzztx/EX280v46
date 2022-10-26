@@ -175,7 +175,78 @@ secrets:
 - name: test-secret
 ```
 
+### Scaling ###
+Manually scaling pods:
+```
+# oc scale --replicas=2 deployment/details-v1
 
+# oc get all
+NAME                                  READY   STATUS    RESTARTS   AGE
+pod/details-v1-54c75c996d-4gd4k       1/1     Running   0          15m
+pod/details-v1-54c75c996d-f7cgd       1/1     Running   0          8s
+
+NAME                             READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/details-v1       2/2     2            2           15m
+
+NAME                                        DESIRED   CURRENT   READY   AGE
+replicaset.apps/details-v1-54c75c996d       2         2         2       15m
+
+```
+
+Automatically scaling pods with the horizontal pod autoscaler:
+```yaml
+# oc autoscale deployment/kibana --min=2 --max=7 --cpu-percent=75
+
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: kibana
+  namespace: openshift-logging
+spec:
+  maxReplicas: 7
+  minReplicas: 2
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: kibana
+  targetCPUUtilizationPercentage: 75
+status:
+  currentReplicas: 5
+  desiredReplicas: 0
+  
+# 
+
+apiVersion: autoscaling/v2 
+kind: HorizontalPodAutoscaler
+metadata:
+  name: hpa-resource-metrics-memory 
+  namespace: default
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1 
+    kind: Deployment 
+    name: example 
+  minReplicas: 1 
+  maxReplicas: 10 
+  metrics: 
+  - type: Resource
+    resource:
+      name: memory 
+      target:
+        type: AverageValue 
+        averageValue: 500Mi 
+  behavior: 
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Pods
+        value: 4
+        periodSeconds: 60
+      - type: Percent
+        value: 10
+        periodSeconds: 60
+      selectPolicy: Max
+```
 
 
 
