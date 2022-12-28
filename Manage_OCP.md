@@ -96,14 +96,13 @@ Add/remove tolertation to pod in spec:
 A node selector specifies a map of key/value pairs that are defined using custom labels on nodes and selectors specified in pods.
 For the pod to be eligible to run on a node, the pod must have the same key/value node selector as the label on the node.
 ```diff
-
-Add nodeSelector in pod spec:
+# Add nodeSelector in pod spec:
 spec:
   nodeSelector: 
     region: east
     type: user-node
     
-Add nodeSelector in Namespace annotation:
+# Add nodeSelector in Namespace annotation:
 apiVersion: v1
 kind: Namespace
 metadata:
