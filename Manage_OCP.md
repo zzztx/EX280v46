@@ -1,4 +1,4 @@
-## Manage OpenShift Container Platform ##
+# Manage OpenShift Container Platform
 - Manage OpenShift Container Platform
 	- Use the command-line interface to manage and configure an OpenShift cluster
 	- Use the web console to manage and configure an OpenShift cluster
@@ -58,7 +58,7 @@ oc cp file <pod>:/file
 oc cp <pod>:/file file
 ```
 
-### Taint and Toleration ###
+## Taint and Toleration
 A taint allows a node to refuse a pod to be scheduled unless that pod has a matching toleration. You apply taints to a node through the Node specification (NodeSpec) and apply tolerations to a pod through the Pod specification (PodSpec). When you apply a taint a node, the scheduler cannot place a pod on that node unless the pod can tolerate the taint.
 - **NoSchedule**: New pods that do not match the taint are not scheduled onto that node. Existing pods on the node remain.
 - **PreferNoSchedule**: New pods that do not match the taint might be scheduled onto that node, but the scheduler tries not to. Existing pods on the node remain.
@@ -66,24 +66,33 @@ A taint allows a node to refuse a pod to be scheduled unless that pod has a matc
 
 ```diff
 Add taint to node:
-# oc adm taint node cnfdf06.ran.dfwt5g.lab key1=value1:NoSchedule
-node/cnfdf06.ran.dfwt5g.lab tainted
-
+# oc adm taint node hub-node2 app=bookinfo:NoExecute
+node/hub-node2 tainted
+# oc get node hub-node2 -o yaml
+......
+spec:
+  taints:
+  - effect: NoExecute
+    key: app
+    value: bookinfo
+    
 Remove taint from node:
-# oc adm taint node cnfdf06.ran.dfwt5g.lab key1-
-node/cnfdf06.ran.dfwt5g.lab untainted
+# oc adm taint node hub-node2 app-
+node/hub-node2 untainted
 
 Add/remove tolertation to pod in spec:
     spec:
       tolerations:
-      - key: "key1"
+      - key: "app"
         operator: "Equal"
-        value: "value1"
+        value: "bookinfo"
         effect: "NoExecute"
         tolerationSeconds: 3600
 ```
+> https://docs.openshift.com/container-platform/4.10/nodes/scheduling/nodes-scheduler-taints-tolerations.html
 
-### Node Selector ##
+
+## Node Selector
 A node selector specifies a map of key/value pairs that are defined using custom labels on nodes and selectors specified in pods.
 For the pod to be eligible to run on a node, the pod must have the same key/value node selector as the label on the node.
 ```diff
@@ -104,7 +113,7 @@ metadata:
 
 ```
 
-### Secret ###
+## Secret
 Creating secret:
 ```yaml
 
@@ -175,7 +184,7 @@ secrets:
 - name: test-secret
 ```
 
-### Scaling ###
+## Pod Scaling
 Manually scaling pods:
 ```
 # oc scale --replicas=2 deployment/details-v1
