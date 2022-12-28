@@ -1,4 +1,4 @@
-## Manage Users and Policies ##
+# Manage Users and Identities
 - Configure the HTPasswd identity provider for authentication
 - Create and delete users
 - Modify user passwords
