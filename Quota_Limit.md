@@ -100,3 +100,7 @@ View limits defined in project:
 
 # oc describe limits resource-limits -n project1
 ```
+
+## Reference
+> https://docs.openshift.com/container-platform/4.10/applications/quotas/quotas-setting-per-project.html
+> https://docs.openshift.com/container-platform/4.10/nodes/clusters/nodes-cluster-limit-ranges.html
