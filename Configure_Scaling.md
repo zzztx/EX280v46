@@ -1,4 +1,4 @@
-## Configure Cluster Scaling
+# Configure Cluster Scaling
 
  - Manually control the number of cluster workers
  - Automatically scale the number of cluster workers
