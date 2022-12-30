@@ -10,6 +10,7 @@
 	- Troubleshoot common cluster events and alerts
 	- Use product documentation
 
+> https://docs.openshift.com/container-platform/4.10/nodes/index.html
 
 Executing troubleshooting commands:
 
@@ -58,59 +59,7 @@ oc cp file <pod>:/file
 oc cp <pod>:/file file
 ```
 
-## Taint and Toleration
-A taint allows a node to refuse a pod to be scheduled unless that pod has a matching toleration. You apply taints to a node through the Node specification (NodeSpec) and apply tolerations to a pod through the Pod specification (PodSpec). When you apply a taint a node, the scheduler cannot place a pod on that node unless the pod can tolerate the taint.
-- **NoSchedule**: New pods that do not match the taint are not scheduled onto that node. Existing pods on the node remain.
-- **PreferNoSchedule**: New pods that do not match the taint might be scheduled onto that node, but the scheduler tries not to. Existing pods on the node remain.
-- **NoExecute**: New pods that do not match the taint cannot be scheduled onto that node. Existing pods on the node that do not have a matching toleration are removed.
 
-```diff
-Add taint to node:
-# oc adm taint node hub-node2 app=bookinfo:NoExecute
-node/hub-node2 tainted
-# oc get node hub-node2 -o yaml
-......
-spec:
-  taints:
-  - effect: NoExecute
-    key: app
-    value: bookinfo
-    
-Remove taint from node:
-# oc adm taint node hub-node2 app-
-node/hub-node2 untainted
-
-Add/remove tolertation to pod in spec:
-    spec:
-      tolerations:
-      - key: "app"
-        operator: "Equal"
-        value: "bookinfo"
-        effect: "NoExecute"
-        tolerationSeconds: 3600
-```
-> https://docs.openshift.com/container-platform/4.10/nodes/scheduling/nodes-scheduler-taints-tolerations.html
-
-
-## Node Selector
-A node selector specifies a map of key/value pairs that are defined using custom labels on nodes and selectors specified in pods.
-For the pod to be eligible to run on a node, the pod must have the same key/value node selector as the label on the node.
-```diff
-# Add nodeSelector in pod spec:
-spec:
-  nodeSelector: 
-    region: east
-    type: user-node
-    
-# Add nodeSelector in Namespace annotation:
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: east-region
-  annotations:
-    openshift.io/node-selector: "region=east"
-
-```
 
 ## Secret
 Creating secret:
@@ -182,79 +131,8 @@ kind: ServiceAccount
 secrets:
 - name: test-secret
 ```
+> https://docs.openshift.com/container-platform/4.10/nodes/pods/nodes-pods-secrets.html
 
-## Pod Scaling
-Manually scaling pods:
-```
-# oc scale --replicas=2 deployment/details-v1
-
-# oc get all
-NAME                                  READY   STATUS    RESTARTS   AGE
-pod/details-v1-54c75c996d-4gd4k       1/1     Running   0          15m
-pod/details-v1-54c75c996d-f7cgd       1/1     Running   0          8s
-
-NAME                             READY   UP-TO-DATE   AVAILABLE   AGE
-deployment.apps/details-v1       2/2     2            2           15m
-
-NAME                                        DESIRED   CURRENT   READY   AGE
-replicaset.apps/details-v1-54c75c996d       2         2         2       15m
-
-```
-
-Automatically scaling pods with the horizontal pod autoscaler:
-```yaml
-# oc autoscale deployment/kibana --min=2 --max=7 --cpu-percent=75
-
-apiVersion: autoscaling/v1
-kind: HorizontalPodAutoscaler
-metadata:
-  name: kibana
-  namespace: openshift-logging
-spec:
-  maxReplicas: 7
-  minReplicas: 2
-  scaleTargetRef:
-    apiVersion: apps/v1
-    kind: Deployment
-    name: kibana
-  targetCPUUtilizationPercentage: 75
-status:
-  currentReplicas: 5
-  desiredReplicas: 0
-  
-# 
-
-apiVersion: autoscaling/v2 
-kind: HorizontalPodAutoscaler
-metadata:
-  name: hpa-resource-metrics-memory 
-  namespace: default
-spec:
-  scaleTargetRef:
-    apiVersion: apps/v1 
-    kind: Deployment 
-    name: example 
-  minReplicas: 1 
-  maxReplicas: 10 
-  metrics: 
-  - type: Resource
-    resource:
-      name: memory 
-      target:
-        type: AverageValue 
-        averageValue: 500Mi 
-  behavior: 
-    scaleDown:
-      stabilizationWindowSeconds: 300
-      policies:
-      - type: Pods
-        value: 4
-        periodSeconds: 60
-      - type: Percent
-        value: 10
-        periodSeconds: 60
-      selectPolicy: Max
-```
 
 
 
