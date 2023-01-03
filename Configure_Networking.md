@@ -1,10 +1,10 @@
 ## Configure Networking Components ###
 - Configure networking components
-	- Troubleshoot software defined networking
-	- Create and edit external routes
-	- Control cluster network ingress
-	- Create a self signed certificate
-	- Secure routes using TLS certificates
+- Troubleshoot software defined networking
+- Create and edit external routes
+- Control cluster network ingress
+- Create a self signed certificate
+- Secure routes using TLS certificates
 
 
 Service types: ClusterIP, NodePort, LoadBalancer, ExternalService
@@ -75,16 +75,106 @@ Ingress rule:
 oc get ingress
 ```
 
+## Create and edit external routes
+
 Certificate generation:
 ```diff
-openssl genrsa -out file.key
-openssl req -new -subj <subject> -out file.req -key file.key
-openssl x509 -req -in file.req -out file.crt -signkey file.key
+Self-signed certs:
+# openssl genrsa -out tls.key
+# openssl req -new -out tls.csr -key tls.key
+# openssl x509 -req -in tls.csr -out tls.crt -signkey tls.key
+
+Signed by CA:
+# openssl x509 -req -days 365 -in tls.csr -CA ca.crt -CAkey ca.key -set_serial 01 -out tls.crt
 ```
 
-Secure route (edge/passthru):
+#### Reencrypt Route
+The tls.key, tls.crt and ca.crt are used to create TLS connection with client. The destca.crt is used to trust service's certificate.
+
+```yaml
+# oc create route reencrypt --service=frontend --cert=tls.crt --key=tls.key --dest-ca-cert=destca.crt --ca-cert=ca.crt --hostname=www.example.com
+
+or
+# cat <<EOF | oc create -f -
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: frontend
+spec:
+  host: www.example.com
+  to:
+    kind: Service
+    name: frontend
+  tls:
+    termination: reencrypt
+    key: |-
+      -----BEGIN PRIVATE KEY-----
+      [...]
+      -----END PRIVATE KEY-----
+    certificate: |-
+      -----BEGIN CERTIFICATE-----
+      [...]
+      -----END CERTIFICATE-----
+    caCertificate: |-
+      -----BEGIN CERTIFICATE-----
+      [...]
+      -----END CERTIFICATE-----
+    destinationCACertificate: |-
+      -----BEGIN CERTIFICATE-----
+      [...]
+      -----END CERTIFICATE-----
+EOF
 ```
-oc create route edge \
-> --service <svcname> --hostname <host>.apps.acme.com \
-> --key file.key --cert file.crt
+
+#### Edge Route
+```yaml
+# oc create route edge --service=frontend --cert=tls.crt --key=tls.key --ca-cert=ca.crt --hostname=www.example.com
+
+# cat <<EOF | oc create -f -
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: frontend
+spec:
+  host: www.example.com
+  to:
+    kind: Service
+    name: frontend
+  tls:
+    termination: edge
+    key: |-
+      -----BEGIN PRIVATE KEY-----
+      [...]
+      -----END PRIVATE KEY-----
+    certificate: |-
+      -----BEGIN CERTIFICATE-----
+      [...]
+      -----END CERTIFICATE-----
+    caCertificate: |-
+      -----BEGIN CERTIFICATE-----
+      [...]
+      -----END CERTIFICATE-----
+EOF
 ```
+
+#### Passthrough Route
+```yaml
+# oc create route passthrough route-passthrough-secured --service=frontend --port=8080
+
+# cat <<EOF | oc create -f -
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: route-passthrough-secured 
+spec:
+  host: www.example.com
+  port:
+    targetPort: 8080
+  tls:
+    termination: passthrough 
+    insecureEdgeTerminationPolicy: None 
+  to:
+    kind: Service
+    name: frontend
+ EOF
+ ```
