@@ -70,12 +70,82 @@ spec:
 
 ```
 
-Ingress rule:
-```
-oc get ingress
+## Control cluster network ingress
+Using External IP:
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: http-service
+spec:
+  clusterIP: 172.30.163.110
+  externalIPs:
+  - 192.168.132.253
+  externalTrafficPolicy: Cluster
+  ports:
+  - name: highport
+    nodePort: 31903
+    port: 30102
+    protocol: TCP
+    targetPort: 30102
+  selector:
+    app: web
+  sessionAffinity: None
+  type: LoadBalancer
+status:
+  loadBalancer:
+    ingress:
+    - ip: 192.168.132.253
 ```
 
-## Create and edit external routes
+Using Load Balancer:
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: egress-2 
+spec:
+  ports:
+  - name: db
+    port: 3306 
+  loadBalancerIP:
+  loadBalancerSourceRanges: 
+  - 10.0.0.0/8
+  - 192.168.0.0/16
+  type: LoadBalancer 
+  selector:
+    name: mysql 
+```
+
+Using NodePort:
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: details-ex-nodeport
+  namespace: bookinfo
+spec:
+  clusterIP: 172.30.108.2
+  clusterIPs:
+  - 172.30.108.2
+  externalTrafficPolicy: Cluster
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+  - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+  - nodePort: 32359
+    port: 9080
+    protocol: TCP
+    targetPort: 9080
+  selector:
+    app: details
+  sessionAffinity: None
+  type: NodePort
+```
+
+
+## Secure routes using TLS certificates
 
 Certificate generation:
 ```diff
